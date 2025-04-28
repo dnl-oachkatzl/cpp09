@@ -6,17 +6,16 @@
 #    By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 19:08:54 by daspring          #+#    #+#              #
-#    Updated: 2024/12/22 21:34:55 by daspring         ###   ########.fr        #
+#    Updated: 2025/04/28 17:42:21 by daspring         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CXX			= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17
 SRC			= main.cpp \
-			  ClapTrap.cpp \
-			  ScavTrap.cpp
+			  BitcoinExchange.cpp
 OBJ			= $(SRC:.cpp=.o)
-TARGET		= scavTrap
+TARGET		= btc
 
 all : $(TARGET)
 
