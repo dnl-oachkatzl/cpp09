@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:46 by daspring          #+#    #+#             */
-/*   Updated: 2025/04/30 18:27:46 by daspring         ###   ########.fr       */
+/*   Updated: 2025/04/30 19:15:46 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,15 @@
 
 #include <string>
 #include <map>
-// #include <utility>
 
-
+enum class Error {
+	NoError,
+	WrongFormat,
+	NotDate,
+	NotNumber,
+	NegNumber,
+	LargeNumber
+};
 
 class	BitcoinExchange {
 public:
@@ -31,19 +37,11 @@ public:
 	void	calcDailyTradingTurnover(const std::string path_to_input);
 
 private:
-	enum class Error {
-		NoError,
-		NotDate,
-		NotNumber,
-		NegNumber,
-		LargeNumber
-	};
-
 	void	copyFrom_(const BitcoinExchange& other);
 	void	parseData_(std::string path_to_data);
 	std::pair<std::string, float>	parseDataLine_(std::string line, int line_number);
 	// std::pair<std::string, float>	parseInputLine_(std::string line);
-	std::pair<std::string, float>	parseInputLine_(std::string line);
+	std::tuple<std::string, float, Error>	parseInputLine_(std::string line);
 	float	calcOneDay_(std::pair<std::string, float>);
 	bool	dateIsValid_(std::string date);
 	bool	wholeStringIsNumber_(std::string value_str, std::size_t idx);
