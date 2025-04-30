@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:28 by daspring          #+#    #+#             */
-/*   Updated: 2025/04/29 00:21:59 by daspring         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:37:31 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "BitcoinExchange.hpp"
 
 int	main(int argc, char** argv) {
+	(void) argv;
 	if (argc != 2) {
 		std::cerr << "wrong parameters. expected './btc <path_to_input_file>'\n";
 		return EXIT_FAILURE;

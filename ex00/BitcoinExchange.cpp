@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:39 by daspring          #+#    #+#             */
-/*   Updated: 2025/04/29 00:57:16 by daspring         ###   ########.fr       */
+/*   Updated: 2025/04/30 19:02:54 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	BitcoinExchange::copyFrom_(const BitcoinExchange& other) {
 }
 
 void	BitcoinExchange::parseData_(std::string path_to_data) {
+	std::cout << "parsing data file:\n";
 	std::ifstream file(path_to_data);
 	if (!file) {
 		throw std::runtime_error("Failed to open data file. '" + path_to_data + "'");
@@ -67,6 +68,10 @@ void	BitcoinExchange::parseData_(std::string path_to_data) {
 			}
 		}
 	}
+	std::cout << "done parsing data file\n\n";
+	for (auto entry : exchange_data_) {
+		std::cout << entry.first << "  --  " << entry.second << "\n";
+	}
 }
 
 void	BitcoinExchange::calcDailyTradingTurnover(const std::string path_to_input) {
@@ -85,8 +90,11 @@ void	BitcoinExchange::calcDailyTradingTurnover(const std::string path_to_input) 
 	while (std::getline(file, line)) {
 		line_number++;
 		std::pair<std::string, float> parsed_line = parseInputLine_(line);
-		float	one_day = calcOneDay_(parsed_line);
-		std::cout << parsed_line.first << "=> " << parsed_line.second << " = " << one_day << "\n";
+		// TODO: 	calculate output
+		// 			print output
+
+		// float	one_day = calcOneDay_(parsed_line);
+		// std::cout << parsed_line.first << "=> " << parsed_line.second << " = " << one_day << "\n";
 			// std::cout << date << "=> " << value;
 	}
 }
@@ -95,29 +103,37 @@ std::pair<std::string, float>	BitcoinExchange::parseDataLine_(std::string line, 
 	std::string	date, value_str;
 	std::stringstream	ss(line);
 	float		value;
+	std::size_t	idx{0};
+
 	getline(ss, date, ',');
 	getline(ss, value_str);
-	// std::cout << date << " - " << value_str << "\n";
+	if (!dateIsValid_(date)) {
+		std::cout << "line " << line_number << \
+			": Not a date - not included.\n";
+		return std::pair("error", value);
+	}
 	try {
-		value = stof(value_str);
-		// std::cout << "value_str: " << value_str << ", to_string(value): " << std::to_chars(value) << "\n";
-		// if (dateIsValid_(date) && (value_str == std::to_string(value))) {
-		if (dateIsValid_(date)) {
-			return std::pair(date, value);
-			// std::cout << date << " - " << value << "\n";
+		value = stof(value_str, &idx);
+		if (wholeStringIsNumber_(value_str, idx)) {
+			std::cerr << "line " << line_number << \
+			": Invalid Value: '" << value_str << "' is not a number.\n";
 		}
 		else {
-			// std::cout << "line " << line_number << " : (potentially) bad input - not included.\n";
-			std::cout << "line " << line_number << " : not a date - not included.\n";
+			return std::pair(date, value);
 		}
 	} catch (const std::invalid_argument& e) {
-		std::cout << "line " << line_number << \
-			": Invalid Agument: unable to convert string to float." << e.what() << "\n";
+		std::cerr << "line " << line_number << \
+			": Invalid Agument: unable to convert string to float. Not included." << e.what() << "\n";
 	} catch (const std::out_of_range& e) {
-		std::cout << "line " << line_number << \
-			": Out of range: number is too large or too small." << e.what() << "\n";
+		std::cerr << "line " << line_number << \
+			": Out of range: number is too large or too small. Not included." << e.what() << "\n";
 	}
 	return std::pair("error", value);
+}
+
+bool	BitcoinExchange::wholeStringIsNumber_(std::string value_str, std::size_t idx) {
+	return	value_str.length() != idx && \
+			value_str.substr(idx).find_first_not_of(" \n\t\r") != std::string::npos;
 }
 
 std::pair<std::string, float>	BitcoinExchange::parseInputLine_(std::string line) {
@@ -125,7 +141,7 @@ std::pair<std::string, float>	BitcoinExchange::parseInputLine_(std::string line)
 	std::stringstream	ss(line);
 	float		value;
 	getline(ss, date, '|');
-	getline(ss, value_str);
+	getline(ss, value_str);	
 	// std::cout << date << " - " << value_str << "\n";
 
 
