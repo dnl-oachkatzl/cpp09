@@ -1,0 +1,36 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/12/18 19:08:54 by daspring          #+#    #+#              #
+#    Updated: 2025/05/03 00:14:03 by daspring         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+CXX			= c++
+CXXFLAGS	= -g -Wall -Wextra -Werror -std=c++17
+SRC			= main.cpp \
+			  RPN.cpp
+OBJ			= $(SRC:.cpp=.o)
+TARGET		= RPN
+
+all : $(TARGET)
+
+$(TARGET) : $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean :
+	rm -f $(OBJ)
+
+fclean : clean
+	rm -f $(TARGET)
+
+re : fclean all
+
+.PHONY : all clean fclean re
