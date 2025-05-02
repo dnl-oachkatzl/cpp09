@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:46 by daspring          #+#    #+#             */
-/*   Updated: 2025/04/30 19:15:46 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:13:24 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ enum class Error {
 	WrongFormat,
 	NotDate,
 	NotNumber,
-	NegNumber,
-	LargeNumber
+	// NegNumber,
+	// LargeNumber
 };
 
 class	BitcoinExchange {
@@ -38,13 +38,14 @@ public:
 
 private:
 	void	copyFrom_(const BitcoinExchange& other);
-	void	parseData_(std::string path_to_data);
+
+	void		parseData_(std::string path_to_data);
+	float		calcOneDay_(std::pair<std::string, float>);
+	std::string	constructOutputString_(std::string date, float value, Error error);
 	std::pair<std::string, float>	parseDataLine_(std::string line, int line_number);
-	// std::pair<std::string, float>	parseInputLine_(std::string line);
 	std::tuple<std::string, float, Error>	parseInputLine_(std::string line);
-	float	calcOneDay_(std::pair<std::string, float>);
-	bool	dateIsValid_(std::string date);
-	bool	wholeStringIsNumber_(std::string value_str, std::size_t idx);
+	bool		dateIsValid_(std::string date);
+	bool		wholeStringIsNumber_(std::string value_str, std::size_t idx);
 
 	std::map<std::string, float> exchange_data_;
 };

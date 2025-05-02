@@ -6,16 +6,17 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:39 by daspring          #+#    #+#             */
-/*   Updated: 2025/04/30 19:38:42 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/02 21:57:27 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <fstream>
+#include <iterator>
 #include <sstream>
 #include <string>
-#include <charconv>
 #include <stdexcept>
+#include <regex>
 #include <utility>
 
 #include "BitcoinExchange.hpp"
@@ -61,6 +62,9 @@ void	BitcoinExchange::parseData_(std::string path_to_data) {
 	}
 	while (std::getline(file, line)) {
 		line_number++;
+		if (line.empty()) {
+			continue;
+		}
 		std::pair<std::string, float> map_entry = parseDataLine_(line, line_number);
 		if (map_entry.first != "error") {
 			if (exchange_data_.insert({map_entry.first, map_entry.second}).second == false) {
@@ -69,9 +73,9 @@ void	BitcoinExchange::parseData_(std::string path_to_data) {
 		}
 	}
 	std::cout << "done parsing data file\n\n";
-	for (auto entry : exchange_data_) {
-		std::cout << entry.first << "  --  " << entry.second << "\n";
-	}
+	// for (auto entry : exchange_data_) {
+	// 	std::cout << entry.first << "  --  " << entry.second << "\n";
+	// }
 }
 
 std::pair<std::string, float>	BitcoinExchange::parseDataLine_(std::string line, int line_number) {
@@ -84,12 +88,12 @@ std::pair<std::string, float>	BitcoinExchange::parseDataLine_(std::string line, 
 	getline(ss, value_str);
 	if (!dateIsValid_(date)) {
 		std::cout << "line " << line_number << \
-			": Not a date - not included.\n";
+			": Not a valid date - not included.\n";
 		return std::pair("error", value);
 	}
 	try {
 		value = stof(value_str, &idx);
-		if (wholeStringIsNumber_(value_str, idx)) {
+		if (!wholeStringIsNumber_(value_str, idx)) {
 			std::cerr << "line " << line_number << \
 			": Invalid Value: '" << value_str << "' is not a number.\n";
 		}
@@ -121,42 +125,78 @@ void	BitcoinExchange::calcDailyTradingTurnover(const std::string path_to_input) 
 	}
 	while (std::getline(file, line)) {
 		line_number++;
+		if (line.empty()) {
+			std::cout << "\n";
+			continue;
+		}
 		std::tuple<std::string, float, Error> parsed_line = parseInputLine_(line);
-		// TODO: 	calculate output
-		// 			print output
-
-		// float	one_day = calcOneDay_(parsed_line);
-		// std::cout << parsed_line.first << "=> " << parsed_line.second << " = " << one_day << "\n";
-			// std::cout << date << "=> " << value;
+		if (std::get<2>(parsed_line) == Error::NoError) {
+		std::cout << constructOutputString_(std::get<0>(parsed_line),
+									  		std::get<1>(parsed_line),
+											std::get<2>(parsed_line));
+		} else {
+		std::cerr << constructOutputString_(std::get<0>(parsed_line),
+									  		std::get<1>(parsed_line),
+											std::get<2>(parsed_line));
+		}
 	}
+}
+
+std::string	BitcoinExchange::constructOutputString_(std::string date, float value, Error error) {
+	std::string			output_string;
+	std::stringstream	output_ss;
+
+	auto it = exchange_data_.lower_bound(date);
+	// const auto it = exchange_data_.upper_bound(date);
+	switch (error) {
+		case Error::NoError:
+			if (it == exchange_data_.begin() && date < it->first ) {
+				output_ss << date << " lies before the first record.\n";
+			} else {
+				if (it->first != date) it--;
+// std::cout << "date from input: " << date << " - date from data: " << it->first << "\n";
+				output_ss << date << " => " << value <<  " = " << it->second * value << "\n";
+			}
+			break ;
+		case Error::WrongFormat:
+			output_ss << "Error: Wrong format. Expected 'year-month-day | value'\n";
+			break ;
+		case Error::NotDate:
+			output_ss << "Error: Not a valid date. " + date + "\n";
+			break ;
+		case Error::NotNumber:
+			output_ss << "Error: Not a valid number - must be [0 - 1000].\n";
+	}
+	return output_ss.str();
 }
 
 std::tuple<std::string, float, Error>	BitcoinExchange::parseInputLine_(std::string line) {
 	std::string	date, value_str;
 	std::stringstream	ss(line);
 	float		value;
-	getline(ss, date, '|');
-	getline(ss, value_str);	
-	// std::cout << date << " - " << value_str << "\n";
+	std::size_t	idx{0};
 
-	if (dateIsValid_(date)) {
-		
+	ss >> date;
+	getline(ss, value_str);	
+	if (value_str.substr(0,3) != " | ") {
+		return std::tuple(date, 0, Error::WrongFormat);
 	}
-	else {
-		std::cout <<  "Error: not a date => " << date << "\n";
+	value_str = value_str.substr(3, value_str.length());
+	if (!dateIsValid_(date)) {
+		return std::tuple(date, 0, Error::NotDate);
 	}
 	try {
-		value = stof(value_str);
-		// std::cout << "value_str: " << value_str << ", to_string(value): " << std::to_chars(value) << "\n";
-		// if (dateIsValid_(date) && (value_str == std::to_string(value))) {
-			// return std::pair(date, value);
-			// std::cout << date << " - " << value << "\n";
+		value = stof(value_str, &idx);
+		if (!wholeStringIsNumber_(value_str, idx) ||
+			value < 0 || value > 1000) {
+			return std::tuple(date, 0, Error::NotNumber);
+		}
 	} catch (const std::invalid_argument& e) {
-		std::cout << "Invalid Agument: unable to convert string to float." << e.what() << "\n";
+		return std::tuple(date, 0, Error::NotNumber);
 	} catch (const std::out_of_range& e) {
-		std::cout << "Out of range: number is too large or too small." << e.what() << "\n";
+		return std::tuple(date, 0, Error::NotNumber);
 	}
-	return std::tuple(date, value, Error::NotDate);
+	return std::tuple(date, value, Error::NoError);
 }
 
 bool	BitcoinExchange::dateIsValid_(std::string date) {
@@ -168,6 +208,10 @@ bool	BitcoinExchange::dateIsValid_(std::string date) {
 	int					days_in_year[12]		= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	int					days_in_leap_year[12] 	= {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+	std::regex	pattern(R"(-?\d+-\d{2}-\d{2})");
+	if (!std::regex_match(date, pattern)) {
+		return false;
+	}
 	ss >> year >> c1 >> month >> c2 >> day >> remainder;
 	if (c1 != '-' || c2 != '-' || remainder.length() != 0) {
 		return false;
@@ -183,6 +227,6 @@ bool	BitcoinExchange::dateIsValid_(std::string date) {
 }
 
 bool	BitcoinExchange::wholeStringIsNumber_(std::string value_str, std::size_t idx) {
-	return	value_str.length() != idx && \
-			value_str.substr(idx).find_first_not_of(" \n\t\r") != std::string::npos;
+	return	value_str.length() == idx || \
+			value_str.substr(idx).find_first_not_of(" \n\t\r") == std::string::npos;
 }
