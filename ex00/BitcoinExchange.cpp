@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:39 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/02 21:57:27 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/03 14:55:08 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,6 +199,7 @@ std::tuple<std::string, float, Error>	BitcoinExchange::parseInputLine_(std::stri
 	return std::tuple(date, value, Error::NoError);
 }
 
+//	requires date to be in ISO-8601 format to enable lexicographical comparison of dates.
 bool	BitcoinExchange::dateIsValid_(std::string date) {
 	std::stringstream	ss(date);
 	int					year, month, day;
@@ -208,7 +209,7 @@ bool	BitcoinExchange::dateIsValid_(std::string date) {
 	int					days_in_year[12]		= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	int					days_in_leap_year[12] 	= {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-	std::regex	pattern(R"(-?\d+-\d{2}-\d{2})");
+	std::regex	pattern(R"(-?\d{4}-\d{2}-\d{2})");
 	if (!std::regex_match(date, pattern)) {
 		return false;
 	}
