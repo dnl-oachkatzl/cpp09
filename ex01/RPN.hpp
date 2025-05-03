@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 00:04:57 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/03 00:28:19 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/03 18:09:19 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 #define RPN_HPP
 
 #include <stack>
+
+enum class Error {
+	NoError,
+	Error,
+};
 
 class	RPN {
 public:
@@ -25,7 +30,9 @@ public:
 
 	void	runOperations(const std::string input);
 private:
-	std::stack<int> numbers_stack_;
+	std::pair<float, Error> handleWord_(std::string word);
+
+	std::stack<float> numbers_stack_;
 };
 
 #endif	//RPN_HPP
