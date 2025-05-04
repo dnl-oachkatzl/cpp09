@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 14:36:53 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/04 14:50:47 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:21:09 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,22 +18,26 @@
 
 class	PmergeMe {
 public:
-	PmergeMe();
+	PmergeMe() = delete;
+	PmergeMe(std::vector<int> unsorted_array);
 	PmergeMe(const PmergeMe& other) = delete;
 	~PmergeMe();
 
 	PmergeMe& operator=(const PmergeMe& other) = delete;
 
+	void				doSorting();
 private:
-	void				sortVec_(std::vector<int> vec_array, int level = 0);
-	void				sortDeque_(std::deque<int> deque_array, int level = 0);
+	void				sortVec_(int level = 0);
+	void				sortDeque_(std::deque<int>& deque_array, int level = 0);
 	void				printVec_();
 	void				printDeque_();
 	bool				isVecSorted_();
 	bool				isDequeSorted_();
+	void				generateJTN_();
 
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;
+	std::deque<int>		JTN_;
 };
 
 #endif	// PMERGEME_HPP

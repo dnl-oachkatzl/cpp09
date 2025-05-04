@@ -6,13 +6,14 @@
 #    By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 19:08:54 by daspring          #+#    #+#              #
-#    Updated: 2025/05/03 20:16:50 by daspring         ###   ########.fr        #
+#    Updated: 2025/05/04 18:49:13 by daspring         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CXX			= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17
-SRC			= main.cpp
+SRC			= 	main.cpp \
+				PmergeMe.cpp
 OBJ			= $(SRC:.cpp=.o)
 TARGET		= PmergeMe
 
