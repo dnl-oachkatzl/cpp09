@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:48:39 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/03 14:55:08 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/04 18:31:12 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@ BitcoinExchange::BitcoinExchange() : BitcoinExchange("./data.csv") {};
 
 BitcoinExchange::BitcoinExchange(std::string path_to_data) {
 	parseData_(path_to_data);
-	// for (const auto& a : exchange_data_) {
-	// 	std::cout << a.first << " - " << a.second << "\n";
-	// }
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange& other) {
@@ -73,9 +70,6 @@ void	BitcoinExchange::parseData_(std::string path_to_data) {
 		}
 	}
 	std::cout << "done parsing data file\n\n";
-	// for (auto entry : exchange_data_) {
-	// 	std::cout << entry.first << "  --  " << entry.second << "\n";
-	// }
 }
 
 std::pair<std::string, float>	BitcoinExchange::parseDataLine_(std::string line, int line_number) {
@@ -154,7 +148,6 @@ std::string	BitcoinExchange::constructOutputString_(std::string date, float valu
 				output_ss << date << " lies before the first record.\n";
 			} else {
 				if (it->first != date) it--;
-// std::cout << "date from input: " << date << " - date from data: " << it->first << "\n";
 				output_ss << date << " => " << value <<  " = " << it->second * value << "\n";
 			}
 			break ;
