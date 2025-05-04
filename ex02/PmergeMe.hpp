@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 14:36:53 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/04 19:21:09 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/04 20:42:46 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ private:
 	bool				isVecSorted_();
 	bool				isDequeSorted_();
 	void				generateJTN_();
+	int					calc_first_idx_of_b_(const int level);
 
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;
