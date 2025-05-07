@@ -6,7 +6,7 @@
 /*   By: daspring <daspring@student.42heilbronn.de  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 14:36:26 by daspring          #+#    #+#             */
-/*   Updated: 2025/05/04 21:17:42 by daspring         ###   ########.fr       */
+/*   Updated: 2025/05/07 23:15:28 by daspring         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ void	PmergeMe::doSorting() {
 }
 
 void	PmergeMe::sortVec_(int level) {
-	int		width_of_elements = std::pow(2, level);
+	// int		width_of_elements = std::pow(2, level);
+	int		width_of_elements = 1 << level;
 	int		max_i_of_a = vec_array_.size() / (2 * width_of_elements);
 	int		max_i_of_b = std::ceil(vec_array_.size() / (2.0 * width_of_elements));
 	int		first_idx_of_b = calc_first_idx_of_b_(level);
@@ -46,24 +47,28 @@ void	PmergeMe::sortVec_(int level) {
 	std::cout << "max_i_of_b: " << max_i_of_b << "\n";
 	std::cout << "first_idx_of_a: " << first_idx_of_a << "\n";
 	std::cout << "first_idx_of_b: " << first_idx_of_b << "\n";
-	std::cout << "\n\n";
+	std::cout << "\n";
 	printVec_();
 
 	// sort pairs
 	for (int i_of_a = 1; i_of_a <= max_i_of_a; i_of_a++) {
 		int idx_of_b = first_idx_of_b + (i_of_a-1) * width_of_elements * 2;
 		int idx_of_a = idx_of_b + width_of_elements;
-		if (vec_array_[idx_of_b] > vec_array_[idx_of_a]) {	// TODO: swap function which takes idx_of_b and width_of_elements as parameters
-			int temp = vec_array_[idx_of_b];
-			vec_array_[idx_of_b] = vec_array_[idx_of_a];
-			vec_array_[idx_of_a] = temp;
+		if (vec_array_[idx_of_b] > vec_array_[idx_of_a]) {
+			swapVecElements_(idx_of_b, width_of_elements);
 		}
 	}
-
 	printVec_();
+
 	if (max_i_of_a > 1) {
-		sortVec_(++level);
+		sortVec_(level + 1);
+	} else {
+		// vec_array_.erase(vec_array_[first_idx_of_b + (2 * width_of_elements)], vec_array_[first_idx_of_b + (2 * width_of_elements) - 1]);
+		vec_array_.erase(vec_array_.end() - width_of_elements, vec_array_.end());
+	printVec_();
+		return ;
 	}
+	std::cout << "rec_level: " << level << "\n\n";
 
 	// binary insertion
 	// do I need an array which holds the idx for all bs? because the idx will change once insertion starts.
@@ -120,12 +125,40 @@ bool	PmergeMe::isDequeSorted_() {
 	return true;
 }
 
-int		PmergeMe::calc_first_idx_of_b_(const int level) {
+int		PmergeMe::calcFirstIdxOfB_(const int level) {
 	int		first_idx_of_b{0};
 
 	for (int i = 0; i < level; i++) {
-		int	step = std::pow(2, i);
+		// int	step = std::pow(2, i);
+		int	step = 1 << i;
 		first_idx_of_b += step;
 	}
 	return first_idx_of_b;
+}
+
+void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
+	int	idx_of_a = idx_of_b + width;
+	for (int i = 0; i < width; i++) {
+		std::swap(vec_array_[idx_of_a - i], vec_array_[idx_of_b - i]);
+	}
+}
+
+// first_index, last_index, test_index
+int		PmergeMe::findEndPos_(int fi, int li, int value, int step) {
+	int ti = (fi + li) / 2;
+	if (step == 1) {
+		step = (ti - fi) * step
+	} else {
+		step = (li - ti) * step
+	}
+
+	if (value > vec_array_[ti]) {
+		fi = ti;
+		// step = 1
+	} else if (value < vec_array_[ti]) {
+		li = ti;
+		// step = -1
+	} else {
+		return ti;
+	}
 }
