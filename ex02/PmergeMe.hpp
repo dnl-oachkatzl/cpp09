@@ -37,7 +37,8 @@ private:
 	void				generateJTN_();
 	void				swapVecElements_(int idx_of_b, int width);
 	int					calcFirstIdxOfB_(const int level);
-	int					findEndPos_(int fi, int li, int value, int step);
+	int					findInsertPos_(int fi, int li, int value);
+	void				insertVecElements_(int into, int from, int len);
 
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;

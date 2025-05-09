@@ -34,11 +34,10 @@ void	PmergeMe::doSorting() {
 }
 
 void	PmergeMe::sortVec_(int level) {
-	// int		width_of_elements = std::pow(2, level);
 	int		width_of_elements = 1 << level;
-	int		max_i_of_a = vec_array_.size() / (2 * width_of_elements);
-	int		max_i_of_b = std::ceil(vec_array_.size() / (2.0 * width_of_elements));
-	int		first_idx_of_b = calc_first_idx_of_b_(level);
+	int		max_i_of_a = vec_array_.size() / width_of_elements / 2;
+	int		max_i_of_b = ceil(vec_array_.size() / width_of_elements / 2.0);
+	int		first_idx_of_b = calcFirstIdxOfB_(level);
 	int		first_idx_of_a = first_idx_of_b + width_of_elements;
 
 	std::cout << "recursion level: " << level << "\n";
@@ -64,12 +63,13 @@ void	PmergeMe::sortVec_(int level) {
 		sortVec_(level + 1);
 	} else {
 		// vec_array_.erase(vec_array_[first_idx_of_b + (2 * width_of_elements)], vec_array_[first_idx_of_b + (2 * width_of_elements) - 1]);
-		vec_array_.erase(vec_array_.end() - width_of_elements, vec_array_.end());
+		// vec_array_.erase(vec_array_.end() - width_of_elements, vec_array_.end());
 	printVec_();
 		return ;
 	}
 	std::cout << "rec_level: " << level << "\n\n";
-
+	std::cout << "insert number at pos: " << findInsertPos_(0, 6, 0) << "\n";
+	std::cout << "insert number at pos: " << findInsertPos_(0, 6, 1) << "\n";
 	// binary insertion
 	// do I need an array which holds the idx for all bs? because the idx will change once insertion starts.
 	// b_i | 1 | 2 | 3 | 4 |
@@ -129,7 +129,6 @@ int		PmergeMe::calcFirstIdxOfB_(const int level) {
 	int		first_idx_of_b{0};
 
 	for (int i = 0; i < level; i++) {
-		// int	step = std::pow(2, i);
 		int	step = 1 << i;
 		first_idx_of_b += step;
 	}
@@ -144,21 +143,25 @@ void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
 }
 
 // first_index, last_index, test_index
-int		PmergeMe::findEndPos_(int fi, int li, int value, int step) {
+int		PmergeMe::findInsertPos_(int fi, int li, int value) {
 	int ti = (fi + li) / 2;
-	if (step == 1) {
-		step = (ti - fi) * step
+	if (value < vec_array_[ti]) {
+		if (ti == fi) {
+			return ti - 1;
+		} else {
+			return findInsertPos_(fi, ti - 1, value);
+		}
+	} else if (vec_array_[ti] < value) {
+		if (ti == li) {
+			return ti + 1;
+		} else {
+			return findInsertPos_(ti + 1, li, value);
+		}
 	} else {
-		step = (li - ti) * step
-	}
-
-	if (value > vec_array_[ti]) {
-		fi = ti;
-		// step = 1
-	} else if (value < vec_array_[ti]) {
-		li = ti;
-		// step = -1
-	} else {
-		return ti;
-	}
+			return ti;
+		}
 }
+
+// void	PmergeMe::insertVecElements_(int into, int from, int len) {
+
+// }
