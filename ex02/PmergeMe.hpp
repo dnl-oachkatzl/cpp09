@@ -15,11 +15,14 @@
 
 #include <vector>
 #include <deque>
+#include <memory>
+
+struct Node;
 
 class	PmergeMe {
 public:
 	PmergeMe() = delete;
-	PmergeMe(std::vector<int> unsorted_array);
+	PmergeMe(std::vector<int>& unsorted_array);
 	PmergeMe(const PmergeMe& other) = delete;
 	~PmergeMe();
 
@@ -29,16 +32,17 @@ public:
 
 private:
 	void				sortVec_(int level = 0);
-	void				sortDeque_(std::deque<int>& deque_array, int level = 0);
-	void				printVec_();
+	void				sortDeque_(int level = 0);
+	void				printVec_(std::vector<int>& vec);
 	void				printDeque_();
 	bool				isVecSorted_();
 	bool				isDequeSorted_();
-	void				generateJTN_();
+	void				generateJTN_(std::vector<int>& unsorted_array);
 	void				swapVecElements_(int idx_of_b, int width);
-	int					calcFirstIdxOfB_(const int level);
+	void				splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level);
+	void				putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level);
 	int					findInsertPos_(int fi, int li, int value);
-	void				insertVecElements_(int into, int from, int len);
+	void				moveVecElements_(int into, int from, int len);
 
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;
