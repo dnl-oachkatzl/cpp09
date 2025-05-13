@@ -42,7 +42,7 @@ private:
 	void				swapVecElements_(int idx_of_b, int width);
 	void				splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level);
 	void				putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level);
-	int					findInsertPos_(int fi, int li, int value);
+	int					findInsertPos_(std::vector<int>& a, int fi, int li, int value, int level);
 	void				moveVecElements_(int into, int from, int len);
 
 	std::vector<int>	vec_array_;

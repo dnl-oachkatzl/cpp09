@@ -169,23 +169,26 @@ void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
 	}
 }
 
-// first_index, last_index, test_index
-int		PmergeMe::findInsertPos_(int fi, int li, int value) {
-	int ti = (fi + li) / 2;
-	if (value < vec_array_[ti]) {
-		if (ti == fi) {
-			return ti - 1;
+//	lower starts at 1 !
+int		PmergeMe::findInsertPos_(std::vector<int>& a, int lower, int upper, int value, int level) {
+	int width = 1 << level;
+	(void)width;
+	int test = (lower + upper) / 2;
+std::cout << "test: " << test << "\n";
+	if (value < a[test * width - 1]) {
+		if (test == lower) {
+			return test - 1;
 		} else {
-			return findInsertPos_(fi, ti - 1, value);
+			return findInsertPos_(a, lower, test - 1, value, level);
 		}
-	} else if (vec_array_[ti] < value) {
-		if (ti == li) {
-			return ti + 1;
+	} else if (a[test * width - 1] < value) {
+		if (test == upper) {
+			return test + 1;
 		} else {
-			return findInsertPos_(ti + 1, li, value);
+			return findInsertPos_(a, test + 1, upper, value, level);
 		}
 	} else {
-			return ti;
+			return test;
 		}
 }
 
@@ -214,26 +217,42 @@ void	PmergeMe::splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vec
 void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
 	int	width = 1 << level;
 
-	// a_idxs and b_idxs link b_i to b
-	// b_3 is found at b_idxs[3]
+	// a_idxs and b_idxs - do not link b_i to b directly
+	// they keep track of the relative positions of b_i's to oneanother
 	std::vector<int>	a_idxs;
-	std::vector<int>	b_idxs;
+	// std::vector<int>	b_idxs;
+	// for (std::size_t i = 0; i <= a.size(); i++) {
+	// 	a_idxs.push_back(i * width - 1);
+	// }
+	// for (std::size_t i = 0; i <= b.size(); i++) {
+	// 	b_idxs.push_back(i * width - 1);
+	// }
 	for (std::size_t i = 0; i <= a.size(); i++) {
-		a_idxs.push_back(i * width - 1);
+		a_idxs.push_back(i);
 	}
-	for (std::size_t i = 0; i <= b.size(); i++) {
-		b_idxs.push_back(i * width - 1);
-	}
+	// for (std::size_t i = 0; i <= b.size(); i++) {
+	// 	b_idxs.push_back(i);
+	// }
 
  	std::vector<int>	JTN_indices;
 	createJTNIndices(JTN_indices, b, level);
-	std::cout << "JTN points to those values of b: ";
+	// std::cout << "JTN points to those values of b: ";
 	for (auto e : JTN_indices) {
-		std::cout << b[b_idxs[e]] << " ";
+//	NO COMPARISON FOR a1 and b1 !!!!
+		if (e == 1) {
+			;
+			// just put b before a
+			// update a_idxs
+		} else {
+			// std::cout << b[b_idxs[e * width - 1]] << " ";
+			std::cout << "a_idxs[e - 1]" << a_idxs[e - 1] << "\n";
+			//	b_i has already been compared to a_i, we want to compare it to a_i-1)
+			int insertion_position = findInsertPos_(a, 1, a_idxs[e - 1], b[e * width - 1], level);
+			std::cout << "for JTN: " << e << " with corresponding b: " << b[e * width - 1] << "\n";
+			std::cout << "the right index for insertion into a is: " << insertion_position << "\n";
+		}
 	}
 	std::cout << "\n";
-//			create idx_arrays for a and b
-//	NO COMPARISON FOR a1 and b1 !!!!
 	a.insert(a.end(), b.begin(), b.end());
 	;
 }
