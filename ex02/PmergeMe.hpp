@@ -34,10 +34,11 @@ private:
 	void				sortVec_(int level = 0);
 	void				sortDeque_(int level = 0);
 	void				printVec_(std::vector<int>& vec);
-	void				printDeque_();
+	void				printDeque_(std::deque<int>& deq);
 	bool				isVecSorted_();
 	bool				isDequeSorted_();
 	void				generateJTN_(std::vector<int>& unsorted_array);
+	void				createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level);
 	void				swapVecElements_(int idx_of_b, int width);
 	void				splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level);
 	void				putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level);

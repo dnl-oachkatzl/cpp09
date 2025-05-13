@@ -123,8 +123,8 @@ void	PmergeMe::printVec_(std::vector<int>& vec) {
 	std::cout << "\n";
 }
 
-void	PmergeMe::printDeque_() {
-	for (auto e : deque_array_) {
+void	PmergeMe::printDeque_(std::deque<int>& deq) {
+	for (auto e : deq) {
 		std::cout << e << " ";
 	}
 	std::cout << "\n";
@@ -213,38 +213,56 @@ void	PmergeMe::splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vec
 
 void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
 	int	width = 1 << level;
-	(void) width;
 
+	// a_idxs and b_idxs link b_i to b
+	// b_3 is found at b_idxs[3]
 	std::vector<int>	a_idxs;
 	std::vector<int>	b_idxs;
 	for (std::size_t i = 0; i <= a.size(); i++) {
-		a_idxs.push_back(i);
+		a_idxs.push_back(i * width - 1);
 	}
 	for (std::size_t i = 0; i <= b.size(); i++) {
-		b_idxs.push_back(i);
+		b_idxs.push_back(i * width - 1);
 	}
 
-	std::cout << "idx of b according to JTN: ";
-	for (std::size_t i = 0; i < JTN_.size(); i++) {
-		int	JTN = JTN_[i];
-		// (void)JTN;
-		for (std::size_t k = JTN; k > 0; k--) {
-			;
-			if (k > b.size() - 1) {
-				continue ;
-			} else if (b[k] == 0) {
-				continue ;
-			} else {
-				std::cout << b_idxs[k] << " ";
-				b_idxs[k] = 0;
-			}
-		}
+ 	std::vector<int>	JTN_indices;
+	createJTNIndices(JTN_indices, b, level);
+	std::cout << "JTN points to those values of b: ";
+	for (auto e : JTN_indices) {
+		std::cout << b[b_idxs[e]] << " ";
 	}
 	std::cout << "\n";
 //			create idx_arrays for a and b
 //	NO COMPARISON FOR a1 and b1 !!!!
 	a.insert(a.end(), b.begin(), b.end());
 	;
+}
+
+void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level) {
+	int	width = 1 << level;
+
+	std::vector<int>	b_idxs;
+	for (std::size_t i = 0; i <= b.size() / width; i++) {
+		b_idxs.push_back(i);
+	}
+	
+	std::cout << "idx of b according to JTN: ";
+	for (std::size_t i = 0; i < JTN_.size(); i++) {
+		bool	reached_end = false;
+		int	JTN = JTN_[i];
+		for (std::size_t k = JTN; k > 0; k--) {
+			if (k > b_idxs.size() - 1) {
+				reached_end = true;
+			} else if (b_idxs[k] == 0) {
+				break ;
+			} else {
+			JTN_indices.push_back(k);
+				b_idxs[k] = 0;
+			}
+		}
+		if (reached_end == true) break ;
+	}
+	printVec_(JTN_indices);
 }
 
 // void	PmergeMe::moveVecElements_(int into, int from, int len) {
