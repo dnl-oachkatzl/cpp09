@@ -183,7 +183,7 @@ std::cout << "test: " << test << "\n";
 		}
 	} else if (a[test * width - 1] < value) {
 		if (test == upper) {
-			return test + 1;
+			return test;
 		} else {
 			return findInsertPos_(a, test + 1, upper, value, level);
 		}
@@ -247,14 +247,13 @@ void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
 			// std::cout << b[b_idxs[e * width - 1]] << " ";
 			std::cout << "a_idxs[e - 1]" << a_idxs[e - 1] << "\n";
 			//	b_i has already been compared to a_i, we want to compare it to a_i-1)
-			int insertion_position = findInsertPos_(a, 1, a_idxs[e - 1], b[e * width - 1], level);
 			std::cout << "for JTN: " << e << " with corresponding b: " << b[e * width - 1] << "\n";
-			std::cout << "the right index for insertion into a is: " << insertion_position << "\n";
+			int insertion_position = findInsertPos_(a, 1, a_idxs[e - 1], b[e * width - 1], level);
+			std::cout << "the right index for insertion into a is: " << insertion_position << "\n\n";
 		}
 	}
 	std::cout << "\n";
-	a.insert(a.end(), b.begin(), b.end());
-	;
+	a.insert(a.begin(), b.begin(), b.end());
 }
 
 void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level) {
