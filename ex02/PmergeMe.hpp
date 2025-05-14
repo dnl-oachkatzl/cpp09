@@ -43,7 +43,8 @@ private:
 	void				splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level);
 	void				putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level);
 	int					findInsertPos_(std::vector<int>& a, int fi, int li, int value, int level);
-	void				moveVecElements_(int into, int from, int len);
+	void				insertVecElements_(std::vector<int>& dest, std::vector<int>& src, int into, int from, int level);
+	void				udpateA_idxs_(std::vector<int>& a_idxs, int insertion_position);
 
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;
