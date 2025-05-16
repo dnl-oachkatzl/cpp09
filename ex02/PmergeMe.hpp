@@ -35,7 +35,7 @@ private:
 	void				sortDeque_(int level = 0);
 	void				printVec_(std::vector<int>& vec);
 	void				printDeque_(std::deque<int>& deq);
-	bool				isVecSorted_();
+	bool				isVecSorted_(std::vector<int>& vec);
 	bool				isDequeSorted_();
 	void				generateJTN_(std::vector<int>& unsorted_array);
 	void				createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level);
