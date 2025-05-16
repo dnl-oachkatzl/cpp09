@@ -40,17 +40,7 @@ void	PmergeMe::doSorting() {
 void	PmergeMe::sortVec_(int level) {
 	int		width_of_elements = 1 << level;
 	int		max_i_of_a = vec_array_.size() / width_of_elements / 2;
-	// int		max_i_of_b = ceil(vec_array_.size() / width_of_elements / 2.0);
 	int		first_idx_of_b = width_of_elements - 1;
-	// int		first_idx_of_a = first_idx_of_b + width_of_elements;
-
-std::cout << "RECURSION LEVEL: " << level << "\n";
-	// std::cout << "width of elements: " << width_of_elements << "\n";
-	// std::cout << "max_i_of_a: " << max_i_of_a << "\n";
-	// std::cout << "max_i_of_b: " << max_i_of_b << "\n";
-	// std::cout << "first_idx_of_a: " << first_idx_of_a << "\n";
-	// std::cout << "first_idx_of_b: " << first_idx_of_b << "\n";
-	// printVec_(vec_array_);
 
 	// sort pairs
 	for (int i_of_a = 1; i_of_a <= max_i_of_a; i_of_a++) {
@@ -60,36 +50,17 @@ std::cout << "RECURSION LEVEL: " << level << "\n";
 			swapVecElements_(idx_of_b, width_of_elements);
 		}
 	}
-printVec_(vec_array_);
 
 	if (max_i_of_a > 1) {
 		sortVec_(level + 1);
 	}
 
-	// std::cout << "\n";
-std::cout << "now on the way back\nrec_level: " << level << "\n";
-printVec_(vec_array_);
-
-//		split array into a and b and rest
 	std::vector<int> a, b, rest;
 	splitVecArray_(a, b, rest, level);
-std::cout << "vec a:\n"; printVec_(a);
-// if (!isVecSorted_(a)) {
-// std::cout << "A IS NOT SORTED ! ! !\n";
-// }
-std::cout << "vec b:\n"; printVec_(b);
-std::cout << "vec rest:\n"; printVec_(rest);
-std::cout << "\n";
 
-//			insert b into a using the series
 	putBIntoA_(a, b, level);
-
-//			add rest to a
 	a.insert(a.end(), rest.begin(), rest.end());
-//			move a into vec_array_
 	vec_array_ = std::move(a);
-
-	// printVec_(vec_array_);
 
 	// std::cout << "insert number at pos: " << findInsertPos_(0, 6, 0) << "\n";
 	// std::cout << "insert number at pos: " << findInsertPos_(0, 6, 1) << "\n";
@@ -99,8 +70,6 @@ std::cout << "\n";
 	// b_i | 1 | 2 | 3 | 4 |
 	// -----------------------
 	// idx |
-
-
 }
 
 void	PmergeMe::generateJTN_(std::vector<int>& unsorted_array) {
@@ -151,16 +120,6 @@ bool	PmergeMe::isDequeSorted_() {
 	return true;
 }
 
-// int		PmergeMe::calcFirstIdxOfB_(const int level) {
-// 	int		first_idx_of_b{0};
-
-// 	for (int i = 0; i < level; i++) {
-// 		int	step = 1 << i;
-// 		first_idx_of_b += step;
-// 	}
-// 	return first_idx_of_b;
-// }
-
 void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
 	int	idx_of_a = idx_of_b + width;
 	for (int i = 0; i < width; i++) {
@@ -172,7 +131,6 @@ void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
 int		PmergeMe::findInsertPos_(std::vector<int>& a, int lower, int upper, int value, int level) {
 	int width = 1 << level;
 	int test = (lower + upper) / 2;
-// std::cout << "test: " << test << "\n";
 	if (value < a[test * width - 1]) {
 		if (test == lower) {
 			return test - 1;
@@ -218,62 +176,27 @@ void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
 	// a_idxs - do not link a_i to a directly
 	// they keep track of the relative positions of a_i's to oneanother
 	std::vector<int>	a_idxs;
-	// std::vector<int>	b_idxs;
-	// for (std::size_t i = 0; i <= a.size(); i++) {
-	// 	a_idxs.push_back(i * width - 1);
-	// }
-	// for (std::size_t i = 0; i <= b.size(); i++) {
-	// 	b_idxs.push_back(i * width - 1);
-	// }
 	for (std::size_t i = 0; i <= a.size(); i++) {
 		a_idxs.push_back(i);
 	}
-	// for (std::size_t i = 0; i <= b.size(); i++) {
-	// 	b_idxs.push_back(i);
-	// }
 
  	std::vector<int>	JTN_indices;
 	createJTNIndices(JTN_indices, b, level);
-	// std::cout << "JTN points to those values of b: ";
 	int	insertion_position;
 	for (auto JTN : JTN_indices) {
 		auto max_el = std::max_element(JTN_indices.begin(), JTN_indices.end());
-std::cout << "JTN: " << JTN << "\n";
-std::cout << "a: "; printVec_(a);
-std::cout << "b: "; printVec_(b);
-
-std::cout << "a_idxs: "; printVec_(a_idxs);
-std::cout << "a_idxs[2] - 1: " << a_idxs[2] - 1 << "\n";
-// std::cout << "a_idxs[JTN] - 1: " << a_idxs[JTN] - 1 << "\n";
-// std::cout << "a[a_idxs[JTN] - 1]: " << a[a_idxs[JTN] - 1] << "\n";
 
 		//	NO COMPARISON FOR a1 and b1 !!!!
 		if (JTN == 1) {
 			insertion_position = 0;
-			// insertVecElements_(a, b, 0, JTN, level);
-			// udpateA_idxs_(a_idxs, 0);
-	
-			// std::cout << "updated a_idxs:";
-			// printVec_(a_idxs);
-		// } else if (JTN == JTN_indices.back()) {
 		} else if (JTN == *max_el && !(a.size() == b.size())) {
-			// insertion_position = findInsertPos_(a, 1, a_idxs[JTN - 1] - 1, b[JTN * width - 1], level);
 			insertion_position = findInsertPos_(a, 1, a_idxs[JTN - 1], b[JTN * width - 1], level);
 		} else {
-			// std::cout << b[b_idxs[JTN * width - 1]] << " ";
-			//	b_i has already been compared to a_i, we want to compare it to a_i-1)
-			// std::cout << "for JTN: " << JTN << " with corresponding b: " << b[JTN * width - 1] << "\n";
 			insertion_position = findInsertPos_(a, 1, a_idxs[JTN] - 1, b[JTN * width - 1], level);
-			// int insertion_position = findInsertPos_(a, 1, a_idxs[JTN] - 1, b[JTN * width - 1], level);
-
-			// printVec_(a_idxs);
 		}
-std::cout << "the right index for insertion into a is: " << insertion_position << "\n\n";
 		insertVecElements_(a, b, insertion_position, JTN, level);
 		udpateA_idxs_(a_idxs, insertion_position);
 	}
-std::cout << "\n";
-	// a.insert(a.begin(), b.begin(), b.end());
 }
 
 void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level) {
@@ -283,8 +206,6 @@ void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>&
 	for (std::size_t i = 0; i <= b.size() / width; i++) {
 		b_idxs.push_back(i);
 	}
-	
-	// std::cout << "idx of b according to JTN: ";
 	for (std::size_t i = 0; i < JTN_.size(); i++) {
 		bool	reached_end = false;
 		int	JTN = JTN_[i];
@@ -300,15 +221,9 @@ void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>&
 		}
 		if (reached_end == true) break ;
 	}
-	// printVec_(JTN_indices);
 }
 
 void	PmergeMe::insertVecElements_(std::vector<int>& dest, std::vector<int>& src, int into, int from, int level) {
-// std::cout << "insertVec dest: ";
-// printVec_(dest);
-// std::cout << "insertVec src: ";
-// printVec_(src);
-
 	int	width = 1 << level;
 
 	std::deque<int>	temp;
@@ -318,18 +233,12 @@ void	PmergeMe::insertVecElements_(std::vector<int>& dest, std::vector<int>& src,
 	for (int i = 0; i < width; i++) {
 		temp.push_front(src[idx_from + i]);
 	}
-// std::cout << "insertVec temp: ";
-// printDeque_(temp);
 	for (int i = 0; i < width; i++) {
 		dest.insert(dest.begin() + idx_into, temp[i]);
 	}
 }
 
 void	PmergeMe::udpateA_idxs_(std::vector<int>& a_idxs, int insertion_position) {
-	// for (std::size_t i = insertion_position + 1; i < a_idxs.size(); i++) {
-	// for (std::size_t i = insertion_position; i < a_idxs.size(); i++) {
-	// 	a_idxs[i]++;
-	// }
 	for (auto& el : a_idxs) {
 		if (el >= insertion_position) el++;
 	}
