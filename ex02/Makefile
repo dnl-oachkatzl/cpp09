@@ -11,7 +11,13 @@
 # **************************************************************************** #
 
 CXX			= c++
-CXXFLAGS	= -g -Wall -Wextra -Werror -Wshadow -std=c++17
+# CXXFLAGS	= -g -Wall -Wextra -Werror -Wshadow -O3 -std=c++17
+# CXXFLAGS	= -Wall -Wextra -Werror -Wshadow -std=c++17
+CXXFLAGS	= -Wall -Wextra -Werror -Wshadow -O3 -std=c++17
+# CXXFLAGS	= -Wall -Wextra -Werror -O3 -std=c++17
+# CXXFLAGS	= -O3 -std=c++17
+
+# CXXFLAGS	= -Wall -Wextra -Werror -Wshadow -O3 -march=native -funroll-loops -std=c++17
 SRC			= 	main.cpp \
 				PmergeMe.cpp
 OBJ			= $(SRC:.cpp=.o)

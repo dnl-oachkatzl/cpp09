@@ -31,25 +31,24 @@ void	PmergeMe::doSorting() {
 	std::cout << "isVecSorted: " << isVecSorted_(vec_array_) << "\n";
 	std::cout << "isDequeSorted: " << isDequeSorted_() << "\n";
 	std::cout << "\n\n";
+	auto	start = std::chrono::high_resolution_clock::now();
 	sortVec_();
+	auto	end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::micro>	duration = end - start;
 	printVec_(vec_array_);
-	std::cout << "isVecSorted: " << isVecSorted_(vec_array_) << "\n";
+	std::cout << "isVecSorted: " << std::is_sorted(vec_array_.begin(), vec_array_.end()) << "\n";
+	std::cout << "this took "
+				<< comps_ << " comparisons and "
+				<< duration.count() << " us.\n";
+
 	std::cout << "isDequeSorted: " << isDequeSorted_() << "\n";
 }
 
 void	PmergeMe::sortVec_(int level) {
 	int		width_of_elements = 1 << level;
 	int		max_i_of_a = vec_array_.size() / width_of_elements / 2;
-	int		first_idx_of_b = width_of_elements - 1;
 
-	// sort pairs
-	for (int i_of_a = 1; i_of_a <= max_i_of_a; i_of_a++) {
-		int idx_of_b = first_idx_of_b + (i_of_a - 1) * width_of_elements * 2;
-		int idx_of_a = idx_of_b + width_of_elements;
-		if (vec_array_[idx_of_b] > vec_array_[idx_of_a]) {
-			swapVecElements_(idx_of_b, width_of_elements);
-		}
-	}
+	sortVecPairs_(level);
 
 	if (max_i_of_a > 1) {
 		sortVec_(level + 1);
@@ -61,15 +60,21 @@ void	PmergeMe::sortVec_(int level) {
 	putBIntoA_(a, b, level);
 	a.insert(a.end(), rest.begin(), rest.end());
 	vec_array_ = std::move(a);
+}
+ 
+void	PmergeMe::sortVecPairs_(int level) {
+	int		width_of_elements = 1 << level;
+	int		max_i_of_a = vec_array_.size() / width_of_elements / 2;
+	int		first_idx_of_b = width_of_elements - 1;
 
-	// std::cout << "insert number at pos: " << findInsertPos_(0, 6, 0) << "\n";
-	// std::cout << "insert number at pos: " << findInsertPos_(0, 6, 1) << "\n";
-
-	// binary insertion
-	// do I need an array which holds the idx for all bs? because the idx will change once insertion starts.
-	// b_i | 1 | 2 | 3 | 4 |
-	// -----------------------
-	// idx |
+	for (int i_of_a = 1; i_of_a <= max_i_of_a; i_of_a++) {
+		int idx_of_b = first_idx_of_b + (i_of_a - 1) * width_of_elements * 2;
+		int idx_of_a = idx_of_b + width_of_elements;
+		comps_++;
+		if (vec_array_[idx_of_b] > vec_array_[idx_of_a]) {
+			swapVecElements_(idx_of_b, width_of_elements);
+		}
+	}
 }
 
 void	PmergeMe::generateJTN_(std::vector<int>& unsorted_array) {
@@ -124,29 +129,54 @@ void	PmergeMe::swapVecElements_(int idx_of_b, int width) {
 	int	idx_of_a = idx_of_b + width;
 	for (int i = 0; i < width; i++) {
 		std::swap(vec_array_[idx_of_a - i], vec_array_[idx_of_b - i]);
+		// std::swap(vec_array_[idx_of_b - i], vec_array_[idx_of_b + width - i]);
 	}
+	// std::swap_ranges(vec_array_.begin() + idx_of_b - width + 1,
+	// 				vec_array_.begin() + idx_of_b + 1,
+	// 				vec_array_.begin() + idx_of_b + 1);
 }
 
 //	lower starts at 1 !
 int		PmergeMe::findInsertPos_(std::vector<int>& a, int lower, int upper, int value, int level) {
 	int width = 1 << level;
 	int test = (lower + upper) / 2;
+	comps_++;
 	if (value < a[test * width - 1]) {
 		if (test == lower) {
 			return test - 1;
 		} else {
 			return findInsertPos_(a, lower, test - 1, value, level);
 		}
-	} else if (a[test * width - 1] < value) {
+	} else {
 		if (test == upper) {
 			return test;
 		} else {
 			return findInsertPos_(a, test + 1, upper, value, level);
 		}
-	} else {
-			return test;
-		}
+	}
 }
+// int		PmergeMe::findInsertPos_(std::vector<int>& a, int lower, int upper, int value, int level) {
+// 	int width = 1 << level;
+// 	int test = (lower + upper) / 2;
+// 	comps_++;
+// 	if (value < a[test * width - 1]) {
+// 		if (test == lower) {
+// 			return test - 1;
+// 		} else {
+// 			return findInsertPos_(a, lower, test - 1, value, level);
+// 		}
+// 	} else if (a[test * width - 1] < value) {
+// 	comps_++;
+// 		if (test == upper) {
+// 			return test;
+// 		} else {
+// 			return findInsertPos_(a, test + 1, upper, value, level);
+// 		}
+// 	} else {
+// 	comps_++;
+// 			return test;
+// 		}
+// }
 
 void	PmergeMe::splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level) {
 	int width = 1 << level;
@@ -171,12 +201,13 @@ void	PmergeMe::splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vec
 
 
 void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
-	int	width = 1 << level;
+	int			width = 1 << level;
+	std::size_t	a_original_size = a.size();
 
 	// a_idxs - do not link a_i to a directly
 	// they keep track of the relative positions of a_i's to oneanother
 	std::vector<int>	a_idxs;
-	for (std::size_t i = 0; i <= a.size(); i++) {
+	for (std::size_t i = 0; i <= a.size() / (1 << level); i++) {
 		a_idxs.push_back(i);
 	}
 
@@ -189,7 +220,7 @@ void	PmergeMe::putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level) {
 		//	NO COMPARISON FOR a1 and b1 !!!!
 		if (JTN == 1) {
 			insertion_position = 0;
-		} else if (JTN == *max_el && !(a.size() == b.size())) {
+		} else if (JTN == *max_el && !(a_original_size == b.size())) {
 			insertion_position = findInsertPos_(a, 1, a_idxs[JTN - 1], b[JTN * width - 1], level);
 		} else {
 			insertion_position = findInsertPos_(a, 1, a_idxs[JTN] - 1, b[JTN * width - 1], level);

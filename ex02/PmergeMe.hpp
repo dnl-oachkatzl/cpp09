@@ -39,6 +39,7 @@ private:
 	bool				isDequeSorted_();
 	void				generateJTN_(std::vector<int>& unsorted_array);
 	void				createJTNIndices(std::vector<int>& JTN_indices, std::vector<int>& b, int level);
+	void				sortVecPairs_(int level);
 	void				swapVecElements_(int idx_of_b, int width);
 	void				splitVecArray_(std::vector<int>& a, std::vector<int>& b, std::vector<int>& rest, int level);
 	void				putBIntoA_(std::vector<int>& a, std::vector<int>& b, int level);
@@ -49,6 +50,7 @@ private:
 	std::vector<int>	vec_array_;
 	std::deque<int>		deque_array_;
 	std::deque<int>		JTN_;
+	int					comps_{0};
 };
 
 #endif	// PMERGEME_HPP
