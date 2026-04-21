@@ -10,9 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <algorithm>
+#include <cmath>
+#include <chrono>
 #include <iostream>
 #include <vector>
-#include <cmath>
 
 #include "PmergeMe.hpp"
 
