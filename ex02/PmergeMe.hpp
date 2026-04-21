@@ -51,12 +51,15 @@ private:
 
 	void				udpateA_idxs_(std::vector<int>& a_idxs, int insertion_position);
 	void				generateJTN_(std::vector<int>& unsorted_array);
-	void				createJTNIndices(std::vector<int>& JTN_indices, size_t length, int level);
+	void				createJTNIndices_(std::vector<int>& JTN_indices, size_t length, int level);
+
+	int					calc_f_of_n_(int n);
 
 	std::vector<int>	vec_;
 	std::deque<int>		deq_;
 	std::deque<int>		JTN_;
 	int					comps_{0};
+	int					f_of_n_{0};
 };
 
 #endif	// PMERGEME_HPP

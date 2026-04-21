@@ -20,7 +20,9 @@
 
 PmergeMe::PmergeMe(std::vector<int>& unsorted_array) :
 	vec_(unsorted_array),
-	deq_(unsorted_array.begin(), unsorted_array.end()) {
+	deq_(unsorted_array.begin(), unsorted_array.end())
+	// f_of_n_(calc_f_of_n_(unsorted_array.size())){
+	{
 	generateJTN_(unsorted_array);
 }
 
@@ -152,7 +154,7 @@ void	PmergeMe::vecPutBIntoA_(std::vector<int>& a, std::vector<int>& b, int level
 	}
 
  	std::vector<int>	JTN_indices;
-	createJTNIndices(JTN_indices, b.size(), level);
+	createJTNIndices_(JTN_indices, b.size(), level);
 	int	insertion_position;
 	for (int JTN : JTN_indices) {
 		auto max_el = std::max_element(JTN_indices.begin(), JTN_indices.end());
@@ -288,7 +290,7 @@ void	PmergeMe::deqPutBIntoA_(std::deque<int>& a, std::deque<int>& b, int level) 
 	}
 
  	std::vector<int>	JTN_indices;
-	createJTNIndices(JTN_indices, b.size(), level);
+	createJTNIndices_(JTN_indices, b.size(), level);
 	int	insertion_position;
 	for (int JTN : JTN_indices) {
 		auto max_el = std::max_element(JTN_indices.begin(), JTN_indices.end());
@@ -340,7 +342,7 @@ void	PmergeMe::generateJTN_(std::vector<int>& unsorted_array) {
 	}
 }
 
-void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, size_t length, int level) {
+void	PmergeMe::createJTNIndices_(std::vector<int>& JTN_indices, size_t length, int level) {
 	int	width = 1 << level;
 
 	std::vector<int>	b_idxs;
@@ -364,3 +366,15 @@ void	PmergeMe::createJTNIndices(std::vector<int>& JTN_indices, size_t length, in
 	}
 }
 
+// F(n) = SUM from k = 1 to n for ceil(lg(3/4*k))
+// int PmergeMe::calc_f_of_n_(int n) {
+// 	int sum{0};
+// 	for (int k = 1; k <= n; ++k) {
+// 		sum += std::ceil(std::log2(3 / 4 * k));
+// 		std::cout << "log(3/4*k) for k = " << k << ": " << std::log2(3/4) << "\n";
+// 		std::cout << "log(6/4) for k = " << k << ": " << std::log2(6/4) << "\n";
+// 		std::cout << "log(9/4) for k = " << k << ": " << std::log2(9/4) << "\n";
+// 	}
+// 	std::cout << "from calc: " << sum << "\n";
+// 	return sum;
+// }
