@@ -55,7 +55,8 @@ void	BitcoinExchange::parseData_(std::string path_to_data) {
 
 	std::getline(file, line);
 	if (line != "date,exchange_rate") {
-		std::cerr << "Data has wrong format. Expected 'date,exchange_rate' as a header.\n";
+		std::cerr << "Data header has wrong format. Expected 'date,exchange_rate'.\n";
+		return ;
 	}
 	while (std::getline(file, line)) {
 		line_number++;
@@ -115,7 +116,8 @@ void	BitcoinExchange::calcDailyTradingTurnover(const std::string path_to_input) 
 	}
 	std::getline(file, line);
 	if (line != "date | value") {
-		std::cerr << "Input has wrong format. Expected 'date | value' as a header.\n";
+		std::cerr << "Input header has wrong format. Expected 'date | value'.\n";
+		return ;
 	}
 	while (std::getline(file, line)) {
 		line_number++;
@@ -141,7 +143,6 @@ std::string	BitcoinExchange::constructOutputString_(std::string date, float valu
 	std::stringstream	output_ss;
 
 	auto it = exchange_data_.lower_bound(date);
-	// const auto it = exchange_data_.upper_bound(date);
 	switch (error) {
 		case Error::NoError:
 			if (it == exchange_data_.begin() && date < it->first ) {
@@ -192,7 +193,7 @@ std::tuple<std::string, float, Error>	BitcoinExchange::parseInputLine_(std::stri
 	return std::tuple(date, value, Error::NoError);
 }
 
-//	requires date to be in ISO-8601 format to enable lexicographical comparison of dates.
+//	requires date to be in ISO-8601 format (Y before M before D, or Y before Ww, ...) to enable lexicographical comparison of dates.
 bool	BitcoinExchange::dateIsValid_(std::string date) {
 	std::stringstream	ss(date);
 	int					year, month, day;
@@ -202,6 +203,10 @@ bool	BitcoinExchange::dateIsValid_(std::string date) {
 	int					days_in_year[12]		= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	int					days_in_leap_year[12] 	= {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+	// regex explanation:	'-'		is literal dash character
+	//						'?'		previous has 0 or 1 occurence
+	//						'/d'	any digit (0-9)
+	//						'{x}'	previous has x occurences
 	std::regex	pattern(R"(-?\d{4}-\d{2}-\d{2})");
 	if (!std::regex_match(date, pattern)) {
 		return false;
@@ -222,5 +227,5 @@ bool	BitcoinExchange::dateIsValid_(std::string date) {
 
 bool	BitcoinExchange::wholeStringIsNumber_(std::string value_str, std::size_t idx) {
 	return	value_str.length() == idx || \
-			value_str.substr(idx).find_first_not_of(" \n\t\r") == std::string::npos;
+			value_str.substr(idx).find_first_not_of(" \n\r") == std::string::npos;
 }

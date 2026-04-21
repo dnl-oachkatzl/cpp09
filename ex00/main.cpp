@@ -17,13 +17,12 @@
 #include "BitcoinExchange.hpp"
 
 int	main(int argc, char** argv) {
-	(void) argv;
 	if (argc != 2) {
 		std::cerr << "wrong parameters. expected './btc <path_to_input_file>'\n";
 		return EXIT_FAILURE;
 	}
 	try {
-		BitcoinExchange btc;
+		BitcoinExchange btc("data2.csv");
 		btc.calcDailyTradingTurnover(argv[1]);
 	} catch (const std::runtime_error& e) {
 		std::cerr << "Failed to construct class BitcoinExchange: " << e.what() << "\n";

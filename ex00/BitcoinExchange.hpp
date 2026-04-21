@@ -21,8 +21,6 @@ enum class Error {
 	WrongFormat,
 	NotDate,
 	NotNumber,
-	// NegNumber,
-	// LargeNumber
 };
 
 class	BitcoinExchange {
