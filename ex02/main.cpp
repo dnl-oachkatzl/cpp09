@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include <string>
 #include <stdexcept>
 
@@ -32,7 +34,10 @@ int	main(int argc, char** argv) {
 		std::cerr << "argument not an integer: " << e.what() << "\n";
 		return EXIT_FAILURE;
 	}
-
+	// std::unordered_set<int> input_set(input_array.begin(), input_array.end());
+	// std::vector<int> temp(input_set.begin(), input_set.end());
+	// std::reverse(temp.begin(), temp.end());
+	// input_array = temp;
 	PmergeMe	ford_johnson(input_array);
 	ford_johnson.doSorting();
 
@@ -41,9 +46,12 @@ int	main(int argc, char** argv) {
 
 void	putInputIntoArray(std::vector<int>& input_array, char **input, const int len) {
 	std::size_t	idx = 0;
-
+	int num;
 	for (int i = 0; i < len; i++) {
-		input_array.push_back(std::stod(input[i], &idx));
+		num = std::stoi(input[i], &idx);
+		if (std::find(input_array.begin(), input_array.end(), num) == input_array.end()) {
+			input_array.push_back(std::stoi(input[i], &idx));
+		}
 		if (!wholeStringIsNumber_(input[i], idx)) {
 			throw std::invalid_argument(input[i]);
 		}
